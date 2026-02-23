@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { CatalogClient } from "@/components/catalog-client"
 
 export const metadata: Metadata = {
-  title: "Catalogo de Propiedades | Real Estate",
-  description: "Explora nuestro catalogo completo de propiedades. Filtra por tipo, ubicacion, precio y mas.",
+  title: "Menu | La Casa del Sabor",
+  description: "Explora nuestro menu completo. Filtra por categoria, tipo de cocina y mas.",
 }
 
 export default function CatalogPage() {

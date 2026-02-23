@@ -1,6 +1,6 @@
 import Link from "next/link"
 import {
-  Building2,
+  UtensilsCrossed,
   Phone,
   Instagram,
   MessageCircle,
@@ -10,9 +10,9 @@ import {
 
 const links = [
   {
-    label: "Catalogo de Propiedades",
+    label: "Ver Nuestro Menu",
     href: "/catalogo",
-    icon: Building2,
+    icon: UtensilsCrossed,
     highlight: true,
   },
   {
@@ -35,12 +35,12 @@ const links = [
   },
   {
     label: "Enviar Correo",
-    href: "mailto:contacto@propiedades.com",
+    href: "mailto:contacto@lacasadelsabor.com",
     icon: Mail,
     external: true,
   },
   {
-    label: "Ubicacion de Oficina",
+    label: "Como Llegar",
     href: "https://maps.google.com",
     icon: MapPin,
     external: true,

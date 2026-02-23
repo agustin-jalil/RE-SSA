@@ -3,33 +3,30 @@
 import { Search, X, SlidersHorizontal, ChevronDown } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useIsMobileOrTablet } from "@/hooks/use-mobile"
-import { propertyTypes, propertyStatuses, propertyLocations } from "@/lib/properties"
+import { dishCategories } from "@/lib/menu"
 
 interface CatalogFiltersProps {
   search: string
   onSearchChange: (value: string) => void
-  type: string
-  onTypeChange: (value: string) => void
-  status: string
-  onStatusChange: (value: string) => void
-  location: string
-  onLocationChange: (value: string) => void
-  bedrooms: number
-  onBedroomsChange: (value: number) => void
+  category: string
+  onCategoryChange: (value: string) => void
+  isVegetarian: boolean
+  onVegetarianChange: (value: boolean) => void
+  isSpicy: boolean
+  onSpicyChange: (value: boolean) => void
   onClear: () => void
   hasActiveFilters: boolean
 }
 
 function activeFilterCount(props: CatalogFiltersProps) {
   let count = 0
-  if (props.type !== "all") count++
-  if (props.status !== "all") count++
-  if (props.location !== "all") count++
-  if (props.bedrooms !== 0) count++
+  if (props.category !== "all") count++
+  if (props.isVegetarian) count++
+  if (props.isSpicy) count++
   return count
 }
 
-/* ─── Select field with custom styling ─── */
+/* --- Select field --- */
 function FilterSelect({
   id,
   label,
@@ -70,7 +67,43 @@ function FilterSelect({
   )
 }
 
-/* ─── Filter form content (shared between mobile & desktop) ─── */
+/* --- Toggle field --- */
+function FilterToggle({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string
+  label: string
+  checked: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        id={id}
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors ${
+          checked ? "border-accent bg-accent" : "border-border bg-muted"
+        }`}
+      >
+        <span
+          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+            checked ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </button>
+      <label htmlFor={id} className="text-sm text-foreground cursor-pointer">
+        {label}
+      </label>
+    </div>
+  )
+}
+
+/* --- Filter form content --- */
 function FilterFormContent(props: CatalogFiltersProps & { onClose: () => void }) {
   const count = activeFilterCount(props)
 
@@ -78,40 +111,26 @@ function FilterFormContent(props: CatalogFiltersProps & { onClose: () => void })
     <div className="flex flex-col gap-6">
       <div className="grid gap-5 grid-cols-1 sm:grid-cols-2">
         <FilterSelect
-          id="filter-type"
-          label="Tipo de propiedad"
-          value={props.type}
-          onChange={props.onTypeChange}
-          options={propertyTypes}
+          id="filter-category"
+          label="Categoria"
+          value={props.category}
+          onChange={props.onCategoryChange}
+          options={dishCategories}
         />
-        <FilterSelect
-          id="filter-status"
-          label="Estado"
-          value={props.status}
-          onChange={props.onStatusChange}
-          options={propertyStatuses}
-        />
-        <FilterSelect
-          id="filter-location"
-          label="Ubicacion"
-          value={props.location}
-          onChange={props.onLocationChange}
-          options={propertyLocations}
-        />
-        <FilterSelect
-          id="filter-bedrooms"
-          label="Recamaras minimas"
-          value={props.bedrooms}
-          onChange={(v) => props.onBedroomsChange(Number(v))}
-          options={[
-            { value: 0, label: "Cualquiera" },
-            { value: 1, label: "1+" },
-            { value: 2, label: "2+" },
-            { value: 3, label: "3+" },
-            { value: 4, label: "4+" },
-            { value: 5, label: "5+" },
-          ]}
-        />
+        <div className="flex flex-col gap-4 justify-end">
+          <FilterToggle
+            id="filter-vegetarian"
+            label="Solo vegetarianos"
+            checked={props.isVegetarian}
+            onChange={props.onVegetarianChange}
+          />
+          <FilterToggle
+            id="filter-spicy"
+            label="Solo picantes"
+            checked={props.isSpicy}
+            onChange={props.onSpicyChange}
+          />
+        </div>
       </div>
 
       {/* Actions */}
@@ -138,7 +157,7 @@ function FilterFormContent(props: CatalogFiltersProps & { onClose: () => void })
   )
 }
 
-/* ─── Mobile / Tablet Bottom Sheet ─── */
+/* --- Mobile Bottom Sheet --- */
 function MobileDrawer({
   open,
   onClose,
@@ -154,7 +173,6 @@ function MobileDrawer({
   const currentY = useRef(0)
   const isDragging = useRef(false)
 
-  // Lock body scroll when open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden"
@@ -194,7 +212,6 @@ function MobileDrawer({
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* Backdrop */}
       <div
         ref={backdropRef}
         className="absolute inset-0 bg-foreground/30 backdrop-blur-sm animate-in fade-in duration-200"
@@ -202,23 +219,20 @@ function MobileDrawer({
         aria-hidden="true"
       />
 
-      {/* Sheet */}
       <div
         ref={sheetRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Filtros de propiedades"
+        aria-label="Filtros del menu"
         className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-3xl bg-background shadow-2xl animate-in slide-in-from-bottom duration-300"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Drag handle */}
         <div className="flex justify-center pb-2 pt-4">
           <div className="h-1.5 w-12 rounded-full bg-border" />
         </div>
 
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-6 pb-4">
           <h2 className="font-serif text-xl font-semibold text-foreground">
             Filtros
@@ -232,7 +246,6 @@ function MobileDrawer({
           </button>
         </div>
 
-        {/* Content - scrollable */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
           {children}
         </div>
@@ -241,7 +254,7 @@ function MobileDrawer({
   )
 }
 
-/* ─── Desktop Dialog ─── */
+/* --- Desktop Dialog --- */
 function DesktopDialog({
   open,
   onClose,
@@ -251,7 +264,6 @@ function DesktopDialog({
   onClose: () => void
   children: React.ReactNode
 }) {
-  // Close on Escape
   useEffect(() => {
     if (!open) return
     const handler = (e: KeyboardEvent) => {
@@ -269,21 +281,18 @@ function DesktopDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-foreground/20 backdrop-blur-sm animate-in fade-in duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Dialog */}
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Filtros de propiedades"
+        aria-label="Filtros del menu"
         className="relative w-full max-w-lg rounded-2xl border border-glass-border bg-background/95 p-8 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-200"
       >
-        {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-serif text-2xl font-semibold text-foreground">
             Filtros
@@ -303,7 +312,7 @@ function DesktopDialog({
   )
 }
 
-/* ─── Main Filters Component ─── */
+/* --- Main Filters Component --- */
 export function CatalogFilters(props: CatalogFiltersProps) {
   const [open, setOpen] = useState(false)
   const isMobileOrTablet = useIsMobileOrTablet()
@@ -313,7 +322,6 @@ export function CatalogFilters(props: CatalogFiltersProps) {
 
   return (
     <div className="mb-8 flex flex-col gap-4">
-      {/* Search bar + filter trigger */}
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -321,9 +329,9 @@ export function CatalogFilters(props: CatalogFiltersProps) {
             type="text"
             value={props.search}
             onChange={(e) => props.onSearchChange(e.target.value)}
-            placeholder="Buscar por nombre, ubicacion, tipo..."
+            placeholder="Buscar por nombre, ingrediente, categoria..."
             className="h-12 w-full rounded-xl border border-glass-border bg-glass pl-11 pr-10 text-sm text-foreground placeholder:text-muted-foreground backdrop-blur-sm transition-colors focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
-            aria-label="Buscar propiedades"
+            aria-label="Buscar platillos"
           />
           {props.search && (
             <button
@@ -355,31 +363,25 @@ export function CatalogFilters(props: CatalogFiltersProps) {
         </button>
       </div>
 
-      {/* Active filter pills (quick visual) */}
+      {/* Active filter pills */}
       {props.hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2">
-          {props.type !== "all" && (
+          {props.category !== "all" && (
             <FilterPill
-              label={propertyTypes.find((t) => t.value === props.type)?.label || props.type}
-              onRemove={() => props.onTypeChange("all")}
+              label={dishCategories.find((c) => c.value === props.category)?.label || props.category}
+              onRemove={() => props.onCategoryChange("all")}
             />
           )}
-          {props.status !== "all" && (
+          {props.isVegetarian && (
             <FilterPill
-              label={propertyStatuses.find((s) => s.value === props.status)?.label || props.status}
-              onRemove={() => props.onStatusChange("all")}
+              label="Vegetariano"
+              onRemove={() => props.onVegetarianChange(false)}
             />
           )}
-          {props.location !== "all" && (
+          {props.isSpicy && (
             <FilterPill
-              label={props.location}
-              onRemove={() => props.onLocationChange("all")}
-            />
-          )}
-          {props.bedrooms > 0 && (
-            <FilterPill
-              label={`${props.bedrooms}+ rec.`}
-              onRemove={() => props.onBedroomsChange(0)}
+              label="Picante"
+              onRemove={() => props.onSpicyChange(false)}
             />
           )}
           <button
@@ -399,7 +401,7 @@ export function CatalogFilters(props: CatalogFiltersProps) {
   )
 }
 
-/* ─── Filter Pill ─── */
+/* --- Filter Pill --- */
 function FilterPill({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/60 px-2.5 py-1 text-xs font-medium text-foreground">

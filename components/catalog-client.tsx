@@ -3,39 +3,36 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
-import { properties, getFilteredProperties } from "@/lib/properties"
+import { dishes, getFilteredDishes } from "@/lib/menu"
 import { CatalogFilters } from "@/components/catalog-filters"
-import { PropertyCard } from "@/components/property-card"
+import { DishCard } from "@/components/property-card"
 
 export function CatalogClient() {
   const [search, setSearch] = useState("")
-  const [type, setType] = useState("all")
-  const [status, setStatus] = useState("all")
-  const [location, setLocation] = useState("all")
-  const [bedrooms, setBedrooms] = useState(0)
+  const [category, setCategory] = useState("all")
+  const [isVegetarian, setIsVegetarian] = useState(false)
+  const [isSpicy, setIsSpicy] = useState(false)
 
   const filtered = useMemo(
     () =>
-      getFilteredProperties({
+      getFilteredDishes({
         search,
-        type,
-        status,
-        location,
-        bedrooms: bedrooms || undefined,
+        category,
+        isVegetarian: isVegetarian || undefined,
+        isSpicy: isSpicy || undefined,
       }),
-    [search, type, status, location, bedrooms]
+    [search, category, isVegetarian, isSpicy]
   )
 
   const clearFilters = () => {
     setSearch("")
-    setType("all")
-    setStatus("all")
-    setLocation("all")
-    setBedrooms(0)
+    setCategory("all")
+    setIsVegetarian(false)
+    setIsSpicy(false)
   }
 
   const hasActiveFilters =
-    search !== "" || type !== "all" || status !== "all" || location !== "all" || bedrooms !== 0
+    search !== "" || category !== "all" || isVegetarian || isSpicy
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -50,12 +47,12 @@ export function CatalogClient() {
         </Link>
         <div>
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground md:text-4xl text-balance">
-            Catalogo de Propiedades
+            Nuestro Menu
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {filtered.length === properties.length
-              ? `${properties.length} propiedades disponibles`
-              : `${filtered.length} de ${properties.length} propiedades`}
+            {filtered.length === dishes.length
+              ? `${dishes.length} platillos disponibles`
+              : `${filtered.length} de ${dishes.length} platillos`}
           </p>
         </div>
       </div>
@@ -64,14 +61,12 @@ export function CatalogClient() {
       <CatalogFilters
         search={search}
         onSearchChange={setSearch}
-        type={type}
-        onTypeChange={setType}
-        status={status}
-        onStatusChange={setStatus}
-        location={location}
-        onLocationChange={setLocation}
-        bedrooms={bedrooms}
-        onBedroomsChange={setBedrooms}
+        category={category}
+        onCategoryChange={setCategory}
+        isVegetarian={isVegetarian}
+        onVegetarianChange={setIsVegetarian}
+        isSpicy={isSpicy}
+        onSpicyChange={setIsSpicy}
         onClear={clearFilters}
         hasActiveFilters={hasActiveFilters}
       />
@@ -79,13 +74,13 @@ export function CatalogClient() {
       {/* Results */}
       {filtered.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+          {filtered.map((dish) => (
+            <DishCard key={dish.id} dish={dish} />
           ))}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-glass-border bg-glass py-20 text-center backdrop-blur-sm">
-          <p className="text-lg font-medium text-foreground">No se encontraron propiedades</p>
+          <p className="text-lg font-medium text-foreground">No se encontraron platillos</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Intenta ajustar los filtros de busqueda
           </p>

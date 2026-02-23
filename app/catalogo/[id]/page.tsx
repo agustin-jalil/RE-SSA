@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getPropertyById, properties } from "@/lib/properties"
-import { PropertyDetail } from "@/components/property-detail"
+import { getDishById, dishes } from "@/lib/menu"
+import { DishDetail } from "@/components/property-detail"
 
 export function generateStaticParams() {
-  return properties.map((p) => ({ id: p.id }))
+  return dishes.map((d) => ({ id: d.id }))
 }
 
 export async function generateMetadata({
@@ -13,23 +13,23 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const property = getPropertyById(id)
-  if (!property) return { title: "Propiedad no encontrada" }
+  const dish = getDishById(id)
+  if (!dish) return { title: "Platillo no encontrado" }
   return {
-    title: `${property.title} | Real Estate`,
-    description: property.description,
+    title: `${dish.name} | La Casa del Sabor`,
+    description: dish.description,
   }
 }
 
-export default async function PropertyPage({
+export default async function DishPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const property = getPropertyById(id)
+  const dish = getDishById(id)
 
-  if (!property) {
+  if (!dish) {
     notFound()
   }
 
@@ -48,7 +48,7 @@ export default async function PropertyPage({
       <div className="pointer-events-none fixed inset-0 z-0 bg-background/80" aria-hidden="true" />
 
       <div className="relative z-10">
-        <PropertyDetail property={property} />
+        <DishDetail dish={dish} />
       </div>
     </main>
   )
