@@ -14,8 +14,8 @@ const _playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'RE-SSA | Propiedades y Restaurantes',
-  description: 'Descubre propiedades exclusivas y los mejores restaurantes con sus catálogos de comidas.',
+  title: 'RE-SSA | Propiedades y Menú',
+  description: 'Descubre propiedades exclusivas y explora nuestro catálogo de comidas deliciosas.',
   generator: 'v0.app',
   icons: {
     icon: [
