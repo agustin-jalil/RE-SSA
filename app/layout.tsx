@@ -14,8 +14,8 @@ const _playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Real Estate | Propiedades Exclusivas',
-  description: 'Encuentra la propiedad de tus suenos. Apartamentos, casas, penthouses y mas.',
+  title: 'RE-SSA | Propiedades y Restaurantes',
+  description: 'Descubre propiedades exclusivas y los mejores restaurantes con sus catálogos de comidas.',
   generator: 'v0.app',
   icons: {
     icon: [
