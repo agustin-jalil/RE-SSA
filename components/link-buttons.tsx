@@ -6,7 +6,6 @@ import {
   MessageCircle,
   Mail,
   MapPin,
-  UtensilsCrossed,
 } from "lucide-react"
 
 const links = [
@@ -14,12 +13,6 @@ const links = [
     label: "Catalogo de Propiedades",
     href: "/catalogo",
     icon: Building2,
-    highlight: true,
-  },
-  {
-    label: "Catálogo de Menú",
-    href: "/menu",
-    icon: UtensilsCrossed,
     highlight: true,
   },
   {
