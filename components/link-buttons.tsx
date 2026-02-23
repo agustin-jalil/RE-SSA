@@ -17,8 +17,8 @@ const links = [
     highlight: true,
   },
   {
-    label: "Menú",
-    href: "/menu",
+    label: "Catalogo de Restaurantes",
+    href: "/restaurantes",
     icon: UtensilsCrossed,
     highlight: true,
   },

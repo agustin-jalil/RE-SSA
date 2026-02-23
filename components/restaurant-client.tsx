@@ -3,39 +3,39 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
-import { menu, getFilteredMenu } from "@/lib/menu"
-import { MenuFilters } from "@/components/menu-filters"
-import { DishCard } from "@/components/menu-card"
+import { restaurants, getFilteredRestaurants } from "@/lib/restaurants"
+import { RestaurantFilters } from "@/components/restaurant-filters"
+import { RestaurantCard } from "@/components/restaurant-card"
 
-export function MenuClient() {
+export function RestaurantClient() {
   const [search, setSearch] = useState("")
-  const [category, setCategory] = useState("all")
+  const [cuisineType, setCuisineType] = useState("all")
+  const [location, setLocation] = useState("all")
   const [maxPrice, setMaxPrice] = useState(0)
-  const [vegetarian, setVegetarian] = useState(false)
-  const [spicy, setSpicy] = useState(false)
+  const [minRating, setMinRating] = useState(0)
 
   const filtered = useMemo(
     () =>
-      getFilteredMenu({
+      getFilteredRestaurants({
         search,
-        category,
+        cuisineType,
+        location,
         maxPrice: maxPrice || undefined,
-        vegetarian,
-        spicy,
+        minRating: minRating || undefined,
       }),
-    [search, category, maxPrice, vegetarian, spicy]
+    [search, cuisineType, location, maxPrice, minRating]
   )
 
   const clearFilters = () => {
     setSearch("")
-    setCategory("all")
+    setCuisineType("all")
+    setLocation("all")
     setMaxPrice(0)
-    setVegetarian(false)
-    setSpicy(false)
+    setMinRating(0)
   }
 
   const hasActiveFilters =
-    search !== "" || category !== "all" || maxPrice !== 0 || vegetarian || spicy
+    search !== "" || cuisineType !== "all" || location !== "all" || maxPrice !== 0 || minRating !== 0
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -50,28 +50,28 @@ export function MenuClient() {
         </Link>
         <div>
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground md:text-4xl text-balance">
-            Menú
+            Catalogo de Restaurantes
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            {filtered.length === menu.length
-              ? `${menu.length} platos disponibles`
-              : `${filtered.length} de ${menu.length} platos`}
+            {filtered.length === restaurants.length
+              ? `${restaurants.length} restaurantes disponibles`
+              : `${filtered.length} de ${restaurants.length} restaurantes`}
           </p>
         </div>
       </div>
 
       {/* Filters */}
-      <MenuFilters
+      <RestaurantFilters
         search={search}
         onSearchChange={setSearch}
-        category={category}
-        onCategoryChange={setCategory}
+        cuisineType={cuisineType}
+        onCuisineTypeChange={setCuisineType}
+        location={location}
+        onLocationChange={setLocation}
         maxPrice={maxPrice}
         onMaxPriceChange={setMaxPrice}
-        vegetarian={vegetarian}
-        onVegetarianChange={setVegetarian}
-        spicy={spicy}
-        onSpicyChange={setSpicy}
+        minRating={minRating}
+        onMinRatingChange={setMinRating}
         onClear={clearFilters}
         hasActiveFilters={hasActiveFilters}
       />
@@ -79,15 +79,15 @@ export function MenuClient() {
       {/* Results */}
       {filtered.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((dish) => (
-            <DishCard key={dish.id} dish={dish} />
+          {filtered.map((restaurant) => (
+            <RestaurantCard key={restaurant.id} restaurant={restaurant} />
           ))}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-glass-border bg-glass py-20 text-center backdrop-blur-sm">
-          <p className="text-lg font-medium text-foreground">No se encontraron platos</p>
+          <p className="text-lg font-medium text-foreground">No se encontraron restaurantes</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Intenta ajustar los filtros de búsqueda
+            Intenta ajustar los filtros de busqueda
           </p>
           <button
             onClick={clearFilters}
